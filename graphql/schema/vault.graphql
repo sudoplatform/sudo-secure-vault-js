@@ -1,0 +1,251 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+"""
+Vault user.
+"""
+type User {
+  username: String!
+}
+
+"""
+Vault owner.
+"""
+type Owner {
+  id: String!
+  issuer: String!
+}
+
+"""
+Vault metadata.
+"""
+type VaultMetadata {
+  """
+  Unique ID
+  """
+  id: ID!
+
+  """
+  Object version.
+  """
+  version: Int!
+
+  """
+  Date/time at which the vault was created.
+  """
+  createdAtEpochMs: Float!
+
+  """
+  Date/time at which the vault was last modified.
+  """
+  updatedAtEpochMs: Float!
+
+  """
+  'sub' of the user that owns this vault.
+  """
+  owner: ID!
+
+  """
+  Blob format specifier.
+  """
+  blobFormat: String!
+
+  """
+  Encryption method specifier.
+  """
+  encryptionMethod: String!
+
+  """
+  List of owners.
+  """
+  owners: [Owner!]!
+}
+
+"""
+Vault.
+"""
+type Vault {
+  """
+  Unique ID
+  """
+  id: ID!
+
+  """
+  Object version.
+  """
+  version: Int!
+
+  """
+  Date/time at which the vault was created.
+  """
+  createdAtEpochMs: Float!
+
+  """
+  Date/time at which the vault was last modified.
+  """
+  updatedAtEpochMs: Float!
+
+  """
+  'sub' of the user that owns this vault.
+  """
+  owner: ID!
+
+  """
+  Based64 encoded blob.
+  """
+  blob: String!
+
+  """
+  Blob format specifier.
+  """
+  blobFormat: String!
+
+  """
+  Encryption method specifier.
+  """
+  encryptionMethod: String!
+
+  """
+  List of owners.
+  """
+  owners: [Owner!]!
+}
+
+"""
+Data required to initialize the client.
+"""
+type InitializationData {
+  owner: ID!
+  encryptionSalt: String!
+  authenticationSalt: String!
+  pbkdfRounds: Int!
+}
+
+type ModelVaultConnection {
+  items: [Vault!]
+  nextToken: String
+}
+
+type ModelVaultMetadataConnection {
+  items: [VaultMetadata!]
+  nextToken: String
+}
+
+input CreateVaultInput {
+  """
+  One-time authentication token.
+  """
+  token: String!
+
+  """
+  Based64 encoded blob.
+  """
+  blob: String!
+
+  """
+  Blob format specifier.
+  """
+  blobFormat: String!
+
+  """
+  Encryption method specifier.
+  """
+  encryptionMethod: String!
+
+  """
+  Ownership proofs.
+  """
+  ownershipProofs: [String!]!
+}
+
+input UpdateVaultInput {
+  """
+  One-time authentication token.
+  """
+  token: String!
+
+  """
+  Unique ID
+  """
+  id: ID!
+
+  """
+  Expected object version.
+  """
+  expectedVersion: Int!
+
+  """
+  Based64 encoded blob.
+  """
+  blob: String!
+
+  """
+  Blob format specifier.
+  """
+  blobFormat: String!
+
+  """
+  Encryption method specifier.
+  """
+  encryptionMethod: String!
+}
+
+input DeleteVaultInput {
+  """
+  Unique ID
+  """
+  id: ID!
+}
+
+type Query {
+  """
+  Retrieves the client initialization data of the authenticated user.
+  """
+  getInitializationData: InitializationData
+
+  """
+  Retrieve a single vault matching the specified ID.
+  """
+  getVault(token: String!, id: ID!): Vault
+
+  """
+  Retrieves all vaults owned by the authenticated user.
+  """
+  listVaults(
+    token: String!
+    limit: Int
+    nextToken: String
+  ): ModelVaultConnection
+
+  """
+  Retrieves metadata for all vaults.
+  """
+  listVaultsMetadataOnly(
+    limit: Int
+    nextToken: String
+  ): ModelVaultMetadataConnection
+}
+
+type Mutation {
+  """
+  Creates a new vault.
+  """
+  createVault(input: CreateVaultInput): VaultMetadata!
+
+  """
+  Updates an existing vault.
+  """
+  updateVault(input: UpdateVaultInput): VaultMetadata!
+
+  """
+  Deletes an existing vault.
+  """
+  deleteVault(input: DeleteVaultInput): VaultMetadata
+
+  """
+  De-registers the user and returns the user details.
+  """
+  deregister: User!
+}

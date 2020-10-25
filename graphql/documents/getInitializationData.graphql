@@ -1,0 +1,8 @@
+query GetInitializationData {
+  getInitializationData {
+    owner
+    encryptionSalt
+    authenticationSalt
+    pbkdfRounds
+  }
+}

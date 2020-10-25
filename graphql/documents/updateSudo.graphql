@@ -1,0 +1,15 @@
+mutation UpdateVault($input: UpdateVaultInput!) {
+  updateVault(input: $input) {
+    id
+    version
+    createdAtEpochMs
+    updatedAtEpochMs
+    owner
+    blobFormat
+    encryptionMethod
+    owners {
+      id
+      issuer
+    }
+  }
+}

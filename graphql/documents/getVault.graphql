@@ -1,0 +1,16 @@
+query GetVault($token: String!, $id: ID!) {
+  getVault(token: $token, id: $id) {
+    id
+    version
+    createdAtEpochMs
+    updatedAtEpochMs
+    owner
+    blob
+    blobFormat
+    encryptionMethod
+    owners {
+      id
+      issuer
+    }
+  }
+}

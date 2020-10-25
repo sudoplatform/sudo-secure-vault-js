@@ -1,0 +1,15 @@
+mutation CreateVault($input: CreateVaultInput!) {
+  createVault(input: $input) {
+    id
+    version
+    createdAtEpochMs
+    updatedAtEpochMs
+    owner
+    blobFormat
+    encryptionMethod
+    owners {
+      id
+      issuer
+    }
+  }
+}

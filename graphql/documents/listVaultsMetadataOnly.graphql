@@ -1,0 +1,18 @@
+query ListVaultsMetadataOnly($limit: Int, $nextToken: String) {
+  listVaultsMetadataOnly(limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      version
+      createdAtEpochMs
+      updatedAtEpochMs
+      owner
+      blobFormat
+      encryptionMethod
+      owners {
+        id
+        issuer
+      }
+    }
+    nextToken
+  }
+}

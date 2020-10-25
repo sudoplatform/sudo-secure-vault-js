@@ -1,0 +1,90 @@
+{
+  "name": "@sudoplatform/sudo-secure-vault",
+  "version": "0.0.0",
+  "author": "Anonyome Labs, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sudoplatform/sudo-secure-vault-js.git"
+  },
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "yarn lint:eslint && yarn lint:prettier",
+    "lint:eslint": "eslint \"{bin,test,src}/**/*.{ts,tsx}\"",
+    "lint:prettier": "prettier -l \"{bin,test,src}/**/*.{js,json,jsx,ts,tsx}\"",
+    "codegen": "graphql-codegen -c codegen.yml",
+    "verify": "yarn audit && yarn lint",
+    "unit-test": "jest test/unit",
+    "integration-test": "jest test/integration",
+    "test": "yarn unit-test && yarn integration-test",
+    "clean": "rm -rf lib docs",
+    "build": "yarn codegen && yarn verify && yarn build:transpile && yarn build:declarations && yarn build:docs",
+    "build:transpile": "babel src --out-dir lib --extensions '.ts'",
+    "build:declarations": "tsc --emitDeclarationOnly",
+    "build:docs": "typedoc --mode library --excludePrivate --out docs src/index.ts"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "docs",
+    "types"
+  ],
+  "dependencies": {
+    "@graphql-typed-document-node/core": "^3.1.0",
+    "@types/graphql": "^14.5.0",
+    "amazon-cognito-identity-js": "^4.4.0",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-link-http": "^1.5.8",
+    "aws-appsync": "^4.0.1",
+    "aws-appsync-auth-link": "^2.0.3",
+    "aws-appsync-subscription-link": "^2.2.1",
+    "fp-ts": "^2.8.3",
+    "graphql": "^15.3.0",
+    "io-ts": "^2.2.10"
+  },
+  "peerDependencies": {
+    "@sudoplatform/sudo-common": "^1.0.4",
+    "@sudoplatform/sudo-user": "^1.0.9"
+  },
+  "resolutions": {
+    "**/apollo-link": "^1.2.14",
+    "**/apollo-cache-inmemory": "^1.6.6",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-private-methods": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
+    "@graphql-codegen/add": "^1.17.6",
+    "@graphql-codegen/cli": "^1.17.6",
+    "@graphql-codegen/typed-document-node": "^1.17.6",
+    "@graphql-codegen/typescript": "^1.17.6",
+    "@graphql-codegen/typescript-operations": "^1.17.6",
+    "@graphql-typed-document-node/apollo-client-2": "^0.0.1",
+    "@sudoplatform/sudo-api-client": "^0.0.8",
+    "@sudoplatform/sudo-common": "^1.0.4",
+    "@sudoplatform/sudo-profiles": "^0.0.5",
+    "@sudoplatform/sudo-user": "^1.0.9",
+    "@types/jest": "^26.0.10",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "apollo-client": "^2.6.10",
+    "dom-storage": "^2.1.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "isomorphic-webcrypto": "^2.3.6",
+    "jest": "^26.1.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^26.3.0",
+    "ts-mockito": "^2.6.1",
+    "typedoc": "0.17.0-3",
+    "typescript": "^3.9.7",
+    "uuid": "^8.3.1",
+    "@types/uuid": "^8.3.0"
+  }
+}
