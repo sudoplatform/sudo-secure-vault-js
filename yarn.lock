@@ -1646,10 +1646,10 @@
     apollo-link-http "^1.5.17"
     aws-appsync "^4.0.1"
 
-"@sudoplatform/sudo-common@^1.0.4":
-  version "1.0.4"
-  resolved "https://repo.tools.anonyome.com/repository/npm-hosted/@sudoplatform/sudo-common/-/sudo-common-1.0.4.tgz#41961f6845836d41fe37237b789678c0648cf796"
-  integrity sha512-JGHjXj1ffllnF3CYZIKXKGIb21R6WfEZMqiNoP3h6914XBK2v4tThtCMABR9FEjX43AFu0O7FHzQWGSkWUSOuA==
+"@sudoplatform/sudo-common@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-common/-/sudo-common-1.0.9.tgz#4c8c1ff941e119ef481e3821db60ebf182cfd0ae"
+  integrity sha512-AkkN/8wtqMGJtabpnQrzoERpHfIriENPWF1tyXZesaCEmheGKrxQOp/+wCkxPoKfA6oWYFWBIgdae9STdVsv3Q==
 
 "@sudoplatform/sudo-profiles@^0.0.5":
   version "0.0.5"

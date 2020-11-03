@@ -10,7 +10,7 @@ import {
   UserNotConfirmedError,
   FatalError,
   NotAuthorizedError,
-} from '../global/error'
+} from '@sudoplatform/sudo-common'
 
 /**
  * Authentication tokens.

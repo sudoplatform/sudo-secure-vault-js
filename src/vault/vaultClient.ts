@@ -1,5 +1,5 @@
+import { InvalidVaultError } from '../global/error'
 import {
-  InvalidVaultError,
   NotRegisteredError,
   NotSignedInError,
   InvalidOwnershipProofError,
@@ -9,7 +9,7 @@ import {
   ServiceError,
   FatalError,
   UserNotConfirmedError,
-} from '../global/error'
+} from '@sudoplatform/sudo-common'
 import { AuthClient } from '../client/authClient'
 import { Config } from './config'
 import { ApiClient } from '../client/apiClient'

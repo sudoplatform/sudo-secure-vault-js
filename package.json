@@ -43,7 +43,7 @@
     "io-ts": "^2.2.10"
   },
   "peerDependencies": {
-    "@sudoplatform/sudo-common": "^1.0.4",
+    "@sudoplatform/sudo-common": "^1.0.9",
     "@sudoplatform/sudo-user": "^1.0.9"
   },
   "resolutions": {
@@ -65,7 +65,7 @@
     "@graphql-codegen/typescript-operations": "^1.17.6",
     "@graphql-typed-document-node/apollo-client-2": "^0.0.1",
     "@sudoplatform/sudo-api-client": "^0.0.8",
-    "@sudoplatform/sudo-common": "^1.0.4",
+    "@sudoplatform/sudo-common": "^1.0.9",
     "@sudoplatform/sudo-profiles": "^0.0.5",
     "@sudoplatform/sudo-user": "^1.0.9",
     "@types/jest": "^26.0.10",

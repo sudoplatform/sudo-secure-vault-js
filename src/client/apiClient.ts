@@ -37,7 +37,7 @@ import {
   InvalidOwnershipProofError,
   PolicyError,
   NotAuthorizedError,
-} from '../global/error'
+} from '@sudoplatform/sudo-common'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 
 /**

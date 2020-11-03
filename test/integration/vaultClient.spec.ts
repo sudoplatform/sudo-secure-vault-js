@@ -12,7 +12,7 @@ import {
   InvalidOwnershipProofError,
   NotAuthorizedError,
   VersionMismatchError,
-} from '../../src/global/error'
+} from '@sudoplatform/sudo-common'
 global.localStorage = new Storage(null, { strict: true })
 global.sessionStorage = new Storage(null, { strict: true })
 global.crypto = require('isomorphic-webcrypto')
@@ -241,6 +241,7 @@ describe('SudoSecureVaultClient', () => {
           'text/utf8',
           'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJvd25lciI6Ijc4YzFiNzFlLTFjNzMtNDhkYS05ZGQxLTFiNTc1ZGFjNjFjNSIsImlhdCI6MTYwMTQ1MTY4NywiZXhwIjoxNjAyNjYxMjg3LCJhdWQiOiJzdWRvcGxhdGZvcm0uc2VjdXJldmF1bHRzZXJ2aWNlIiwiaXNzIjoic3Vkb3BsYXRmb3JtLnN1ZG9zZXJ2aWNlIiwic3ViIjoiOTFjMTI4M2UtYmM3Ny00NzgxLWJiYzctZDQ0YzBmOTkwMmY4IiwianRpIjoiYTFmOGI5NzYtYzIyOS00MzkzLWFmYWQtMGE5NDMxMTczMTk1In0.hYEdFTRGdM9tUuVs0M5Id6iHo2ms18jxcYVbM3vAoky9BitVyQ2dzzY_ZJbREAXNW8VgOh0Wv_Uq-Kiw_6tlcPwRUeYVLHeQ97Ozo6z2COJaNGncNQg9m0ulfVYbvIK_TB99VS09wMvLWCntWldYFc87uM5aogw6_5uJZyB8gEtw1tN80XRBCg5Q_5stQDsCuCE6zc20aNZJ0RoRKNW6u6HdmtWaMO8o2XR0JiAzjzyaMtikJamzZYI-w6rzowk5BbBPPmwb2dp5yIcres6jRvcZZWm7A14NEQIOiKv8QlN7ocw_Ki8p2-oivQgWPkysZB0DtAvASH8_KGpVZHTM5Q',
         )
+        fail('Expected error not thrown.')
       } catch (err) {
         expect(err).toBeInstanceOf(InvalidOwnershipProofError)
       }
@@ -282,6 +283,21 @@ describe('SudoSecureVaultClient', () => {
         expect(err).toBeInstanceOf(VersionMismatchError)
       }
     }, 30000)
+
+    it('Change vault password with wrong password.', async () => {
+      await client.register(key, stringToBuffer('passw0rd'))
+      expect(await client.isRegistered()).toBeTruthy()
+      try {
+        await client.changeVaultPassword(
+          key,
+          stringToBuffer('passw2rd'),
+          stringToBuffer('passw1rd'),
+        )
+        fail('Expected error not thrown.')
+      } catch (err) {
+        expect(err).toBeInstanceOf(NotAuthorizedError)
+      }
+    }, 60000)
   } else {
     it('Skip all tests.', () => {
       console.log(

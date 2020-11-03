@@ -9,7 +9,7 @@ import { Base64 } from '../../src/util/base64'
 import { WebCryptoSecurityProvider } from '../../src/security/webCryptoSecurityProvider'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
-import { NotSignedInError } from '../../src/global/error'
+import { NotSignedInError } from '@sudoplatform/sudo-common'
 
 describe('SudoSecureVaultClient', () => {
   const sudoUserClientMock: SudoUserClient = mock()
