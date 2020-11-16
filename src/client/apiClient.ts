@@ -37,6 +37,7 @@ import {
   InvalidOwnershipProofError,
   PolicyError,
   NotAuthorizedError,
+  Logger,
 } from '@sudoplatform/sudo-common'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 
@@ -48,15 +49,18 @@ export class ApiClient {
   private readonly sudoUserClient: SudoUserClient
   private region: string
   private graphqlUrl: string
+  private logger: Logger
 
   public constructor(
     sudoUserClient: SudoUserClient,
     region: string,
     graphqlUrl: string,
+    logger: Logger,
   ) {
     this.sudoUserClient = sudoUserClient
     this.region = region
     this.graphqlUrl = graphqlUrl
+    this.logger = logger
 
     const clientOptions = {
       url: graphqlUrl,
@@ -394,7 +398,7 @@ export class ApiClient {
   }
 
   private graphQLErrorsToClientError(error: AppSyncError): Error {
-    console.log({ error }, 'GraphQL call failed.')
+    this.logger.error({ error }, 'GraphQL call failed.')
 
     if (error.errorType === 'DynamoDB:ConditionalCheckFailedException') {
       return new VersionMismatchError()

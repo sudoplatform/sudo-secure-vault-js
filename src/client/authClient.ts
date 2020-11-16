@@ -10,6 +10,7 @@ import {
   UserNotConfirmedError,
   FatalError,
   NotAuthorizedError,
+  Logger,
 } from '@sudoplatform/sudo-common'
 
 /**
@@ -27,13 +28,19 @@ export class AuthClient {
   private userPool: CognitoUserPool
   private user?: CognitoUser
   private userSession?: CognitoUserSession
+  private logger: Logger
 
-  public constructor(userPoolId: string, userPoolCilentId: string) {
+  public constructor(
+    userPoolId: string,
+    userPoolCilentId: string,
+    logger: Logger,
+  ) {
     const poolData = {
       UserPoolId: userPoolId,
       ClientId: userPoolCilentId,
     }
     this.userPool = new CognitoUserPool(poolData)
+    this.logger = logger
   }
 
   public async register(
@@ -72,8 +79,10 @@ export class AuthClient {
               ) ||
               error.message.includes('sudoplatform.vault.TokenValidationError')
             ) {
+              this.logger.error('User is not authorized to register.')
               reject(new NotAuthorizedError())
             } else {
+              this.logger.error({ error }, 'Unexpected error encountered.')
               reject(error)
             }
             return
@@ -81,6 +90,9 @@ export class AuthClient {
           if (result?.userConfirmed) {
             resolve(username)
           } else {
+            this.logger.error(
+              'Registration completed but the user is not confirmed.',
+            )
             reject(new UserNotConfirmedError())
           }
         },

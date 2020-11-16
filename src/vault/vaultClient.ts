@@ -2,6 +2,7 @@ import { InvalidVaultError } from '../global/error'
 import {
   NotRegisteredError,
   NotSignedInError,
+  NotAuthorizedError,
   InvalidOwnershipProofError,
   VersionMismatchError,
   PolicyError,
@@ -9,6 +10,8 @@ import {
   ServiceError,
   FatalError,
   UserNotConfirmedError,
+  Logger,
+  getLogger,
 } from '@sudoplatform/sudo-common'
 import { AuthClient } from '../client/authClient'
 import { Config } from './config'
@@ -283,6 +286,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   private sudoUserClient: SudoUserClient
   private initializationData?: InitializationData
   private securityProvider: SecurityProvider
+  private logger: Logger
   private pbkdfRounds: number
 
   constructor(
@@ -291,7 +295,10 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     authClient?: AuthClient,
     apiClient?: ApiClient,
     securityProvder?: SecurityProvider,
+    logger?: Logger,
   ) {
+    this.logger = logger ?? getLogger()
+
     this.config =
       config ??
       DefaultConfigurationManager.getInstance().bindConfigSet<Config>(
@@ -299,18 +306,24 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
         'secureVaultService',
       )
 
-    console.log({ config }, 'Intializating the client.')
+    this.logger.info({ config }, 'Intializating the client.')
 
     this.pbkdfRounds = this.config.pbkdfRounds
     this.sudoUserClient = sudoUserClient
     this.securityProvider = securityProvder ?? new WebCryptoSecurityProvider()
 
     this.authClient =
-      authClient ?? new AuthClient(this.config.poolId, this.config.clientId)
+      authClient ??
+      new AuthClient(this.config.poolId, this.config.clientId, this.logger)
 
     this.apiClient =
       apiClient ??
-      new ApiClient(sudoUserClient, this.config.region, this.config.apiUrl)
+      new ApiClient(
+        sudoUserClient,
+        this.config.region,
+        this.config.apiUrl,
+        this.logger,
+      )
   }
 
   private async signIn(
@@ -320,7 +333,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     authenticationSalt: ArrayBuffer,
     pbkdfRounds: number,
   ): Promise<string> {
-    console.log(
+    this.logger.info(
       'Signing into Secure Vault authentication provider to obtain an OTP.',
     )
 
@@ -347,7 +360,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     if (this.initializationData) {
       return this.initializationData
     } else {
-      console.log('Retrieving the client initialization data.')
+      this.logger.info('Retrieving the client initialization data.')
 
       const initializationData = await this.apiClient.getInitializationData()
       if (initializationData) {
@@ -367,7 +380,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   }
 
   async register(key: ArrayBuffer, password: ArrayBuffer): Promise<string> {
-    console.log('Registering a vault user.')
+    this.logger.info('Registering a vault user.')
 
     const token = this.sudoUserClient.getIdToken()
     const sub = this.sudoUserClient.getSubject()
@@ -425,7 +438,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     blobFormat: string,
     ownershipProof: string,
   ): Promise<VaultMetadata> {
-    console.log('Creating a vault.')
+    this.logger.info('Creating a vault.')
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
@@ -480,7 +493,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     blob: ArrayBuffer,
     blobFormat: string,
   ): Promise<VaultMetadata> {
-    console.log({ id, version }, 'Updating a vault.')
+    this.logger.info({ id, version }, 'Updating a vault.')
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
@@ -530,7 +543,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   }
 
   async deleteVault(id: string): Promise<VaultMetadata | undefined> {
-    console.log({ id }, 'Deleting a vault.')
+    this.logger.info({ id }, 'Deleting a vault.')
 
     const vault = await this.apiClient.deleteVault({ id: id })
     return vault
@@ -557,7 +570,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     password: ArrayBuffer,
     id: string,
   ): Promise<Vault | undefined> {
-    console.log({ id }, 'Retrieving a vault.')
+    this.logger.info({ id }, 'Retrieving a vault.')
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
@@ -615,7 +628,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   }
 
   async listVaults(key: ArrayBuffer, password: ArrayBuffer): Promise<Vault[]> {
-    console.log('Listing vaults.')
+    this.logger.info('Listing vaults.')
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
@@ -675,7 +688,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   }
 
   async listVaultsMetadataOnly(): Promise<VaultMetadata[]> {
-    console.log('Listing vaults (metdata only).')
+    this.logger.info('Listing vaults (metdata only).')
 
     const vaults = await this.apiClient.listVaultsMetadataOnly()
     return vaults.map(
@@ -702,7 +715,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     oldPassword: ArrayBuffer,
     newPassword: ArrayBuffer,
   ): Promise<void> {
-    console.log('Changing the vault password.')
+    this.logger.info('Changing the vault password.')
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {

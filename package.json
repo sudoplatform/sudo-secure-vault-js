@@ -20,7 +20,7 @@
     "build": "yarn codegen && yarn verify && yarn build:transpile && yarn build:declarations && yarn build:docs",
     "build:transpile": "babel src --out-dir lib --extensions '.ts'",
     "build:declarations": "tsc --emitDeclarationOnly",
-    "build:docs": "typedoc --mode library --excludePrivate --out docs src/index.ts"
+    "build:docs": "typedoc --mode modules --excludePrivate --out docs src/index.ts"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -43,8 +43,8 @@
     "io-ts": "^2.2.10"
   },
   "peerDependencies": {
-    "@sudoplatform/sudo-common": "^1.0.9",
-    "@sudoplatform/sudo-user": "^1.0.9"
+    "@sudoplatform/sudo-common": "^1.0.13",
+    "@sudoplatform/sudo-user": "^1.1.0"
   },
   "resolutions": {
     "**/apollo-link": "^1.2.14",
@@ -64,10 +64,10 @@
     "@graphql-codegen/typescript": "^1.17.6",
     "@graphql-codegen/typescript-operations": "^1.17.6",
     "@graphql-typed-document-node/apollo-client-2": "^0.0.1",
-    "@sudoplatform/sudo-api-client": "^0.0.8",
-    "@sudoplatform/sudo-common": "^1.0.9",
-    "@sudoplatform/sudo-profiles": "^0.0.5",
-    "@sudoplatform/sudo-user": "^1.0.9",
+    "@sudoplatform/sudo-api-client": "^1.0.0",
+    "@sudoplatform/sudo-common": "^1.0.13",
+    "@sudoplatform/sudo-profiles": "^2.0.0",
+    "@sudoplatform/sudo-user": "^1.1.0",
     "@types/jest": "^26.0.10",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
@@ -82,7 +82,7 @@
     "prettier": "^2.0.5",
     "ts-jest": "^26.3.0",
     "ts-mockito": "^2.6.1",
-    "typedoc": "0.17.0-3",
+    "typedoc": "0.19.2",
     "typescript": "^3.9.7",
     "uuid": "^8.3.1",
     "@types/uuid": "^8.3.0"
