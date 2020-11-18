@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "@sudoplatform/sudo-common": "^2.0.0",
-    "@sudoplatform/sudo-user": "^1.1.0"
+    "@sudoplatform/sudo-user": "^2.0.0"
   },
   "resolutions": {
     "**/apollo-link": "^1.2.14",
@@ -67,7 +67,7 @@
     "@sudoplatform/sudo-api-client": "^1.0.0",
     "@sudoplatform/sudo-common": "^2.0.0",
     "@sudoplatform/sudo-profiles": "^2.0.0",
-    "@sudoplatform/sudo-user": "^1.1.0",
+    "@sudoplatform/sudo-user": "^2.0.0",
     "@types/jest": "^26.0.10",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",

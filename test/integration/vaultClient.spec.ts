@@ -1,7 +1,14 @@
 import { DefaultSudoSecureVaultClient } from '../../src/vault/vaultClient'
 import { DefaultSudoUserClient } from '@sudoplatform/sudo-user'
-import { DefaultSudoProfilesClient } from '@sudoplatform/sudo-profiles'
-import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
+import {
+  DefaultKeyManager,
+  DefaultSudoProfilesClient,
+  KeyStore,
+} from '@sudoplatform/sudo-profiles'
+import {
+  DefaultConfigurationManager,
+  InsufficientEntitlementsError,
+} from '@sudoplatform/sudo-common'
 import { readFileSync, existsSync } from 'fs'
 import { v4 } from 'uuid'
 import Storage from 'dom-storage'
@@ -13,6 +20,7 @@ import {
   NotAuthorizedError,
   VersionMismatchError,
 } from '@sudoplatform/sudo-common'
+import { ApiClient } from '@sudoplatform/sudo-profiles/lib/client/apiClient'
 global.localStorage = new Storage(null, { strict: true })
 global.sessionStorage = new Storage(null, { strict: true })
 global.crypto = require('isomorphic-webcrypto')
@@ -49,15 +57,20 @@ describe('SudoSecureVaultClient', () => {
     DefaultConfigurationManager.getInstance().setConfig(config)
 
     const sudoUserClient = new DefaultSudoUserClient()
-
     const apiClientManager = DefaultApiClientManager.getInstance()
     apiClientManager.setAuthClient(sudoUserClient)
-    const apiClient = apiClientManager.getClient({
+    const appSyncClient = apiClientManager.getClient({
       disableOffline: true,
     })
+    const apiClient = new ApiClient(sudoUserClient, appSyncClient)
+    const keyStore = new KeyStore()
+    const keyManager = new DefaultKeyManager(keyStore)
+    keyManager.setSymmetricKeyId('dummy_key_id')
+    keyManager.insertKey('dummy_key_id', new Uint8Array(new ArrayBuffer(16)))
 
     const sudoProfilesClient = new DefaultSudoProfilesClient(
       sudoUserClient,
+      keyManager,
       apiClient,
     )
 
@@ -100,6 +113,7 @@ describe('SudoSecureVaultClient', () => {
       await client.register(key, stringToBuffer('passw0rd'))
       expect(await client.isRegistered()).toBeTruthy()
 
+      await sudoProfilesClient.redeem('sudoplatform.sudo.max=3', 'entitlements')
       const sudo = await sudoProfilesClient.createSudo(new Sudo())
 
       const ownershipProof = await sudoProfilesClient.getOwnershipProof(
@@ -174,6 +188,7 @@ describe('SudoSecureVaultClient', () => {
       await client.register(key, stringToBuffer('passw0rd'))
       expect(await client.isRegistered()).toBeTruthy()
 
+      await sudoProfilesClient.redeem('sudoplatform.sudo.max=3', 'entitlements')
       const sudo = await sudoProfilesClient.createSudo(new Sudo())
 
       const ownershipProof = await sudoProfilesClient.getOwnershipProof(
@@ -251,6 +266,7 @@ describe('SudoSecureVaultClient', () => {
       await client.register(key, stringToBuffer('passw0rd'))
       expect(await client.isRegistered()).toBeTruthy()
 
+      await sudoProfilesClient.redeem('sudoplatform.sudo.max=3', 'entitlements')
       const sudo = await sudoProfilesClient.createSudo(new Sudo())
 
       const ownershipProof = await sudoProfilesClient.getOwnershipProof(
@@ -298,6 +314,44 @@ describe('SudoSecureVaultClient', () => {
         expect(err).toBeInstanceOf(NotAuthorizedError)
       }
     }, 60000)
+
+    it('Create a vault with insufficient entitlements.', async () => {
+      await client.register(key, stringToBuffer('passw0rd'))
+      expect(await client.isRegistered()).toBeTruthy()
+
+      await sudoProfilesClient.redeem('sudoplatform.sudo.max=3', 'entitlements')
+      const sudo = await sudoProfilesClient.createSudo(new Sudo())
+
+      const ownershipProof = await sudoProfilesClient.getOwnershipProof(
+        sudo.id,
+        'sudoplatform.secure-vault.vault',
+      )
+
+      // TODO: Once we have redeem API manipulate the entitlements to
+      // desired number before creating vaults.
+      for (let i = 0; i < 3; i++) {
+        await client.createVault(
+          key,
+          stringToBuffer('passw0rd'),
+          stringToBuffer('dummy_blob'),
+          'text/utf8',
+          ownershipProof,
+        )
+      }
+
+      try {
+        await client.createVault(
+          key,
+          stringToBuffer('passw0rd'),
+          stringToBuffer('dummy_blob'),
+          'text/utf8',
+          ownershipProof,
+        )
+        fail('Expected error not thrown.')
+      } catch (err) {
+        expect(err).toBeInstanceOf(InsufficientEntitlementsError)
+      }
+    }, 30000)
   } else {
     it('Skip all tests.', () => {
       console.log(
