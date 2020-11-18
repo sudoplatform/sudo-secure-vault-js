@@ -35,7 +35,7 @@ import {
   ServiceError,
   AppSyncError,
   InvalidOwnershipProofError,
-  PolicyError,
+  InsufficientEntitlementsError,
   NotAuthorizedError,
   Logger,
 } from '@sudoplatform/sudo-common'
@@ -413,8 +413,10 @@ export class ApiClient {
       error.errorType === 'sudoplatform.vault.NotAuthorizedError'
     ) {
       return new NotAuthorizedError()
-    } else if (error.errorType === 'sudoplatform.PolicyFailed') {
-      return new PolicyError()
+    } else if (
+      error.errorType === 'sudoplatform.InsufficientEntitlementsError'
+    ) {
+      return new InsufficientEntitlementsError()
     } else {
       return new UnknownGraphQLError(error)
     }

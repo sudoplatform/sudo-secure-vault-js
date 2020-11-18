@@ -1672,10 +1672,10 @@
     apollo-link-http "^1.5.17"
     aws-appsync "^4.0.1"
 
-"@sudoplatform/sudo-common@^1.0.13":
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-common/-/sudo-common-1.0.13.tgz#30ef6e006683c5add7e80316806464090d547607"
-  integrity sha512-TvOr7oBstwlCWIXpUmkgB22MP1gB2RVBLlUVl4IsoeHi7jN69X1hOJOsVJRc8Tcd7uUDybQpU0vCo08nstGKVA==
+"@sudoplatform/sudo-common@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-common/-/sudo-common-2.0.0.tgz#cd20c3d77eb3200f611ac8b0ccd7ab0d7b4b5f45"
+  integrity sha512-qkQqY1SDrwmn6t0bW5Qo0+GCK0sH1PRoS8UDYDOmPTILTzTyCjdAmCEZAtKQombne061YedYQRpBZR2GiTRSlw==
   dependencies:
     browser-bunyan "^1.6.3"
 

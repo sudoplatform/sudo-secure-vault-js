@@ -5,7 +5,7 @@ import {
   NotAuthorizedError,
   InvalidOwnershipProofError,
   VersionMismatchError,
-  PolicyError,
+  InsufficientEntitlementsError,
   UnknownGraphQLError,
   ServiceError,
   FatalError,
@@ -147,7 +147,7 @@ export interface SudoSecureVaultClient {
    *
    * @throws {@link NotAuthorizedError}
    * @throws {@link InvalidOwnershipProofError}
-   * @throws {@link PolicyError}
+   * @throws {@link InsufficientEntitlementsError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    * @throws {@link FatalError}
