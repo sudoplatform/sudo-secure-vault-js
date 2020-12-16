@@ -82,7 +82,7 @@ export class AuthClient {
               this.logger.error('User is not authorized to register.')
               reject(new NotAuthorizedError())
             } else {
-              this.logger.error({ error }, 'Unexpected error encountered.')
+              this.logger.error('Unexpected error encountered.', { error })
               reject(error)
             }
             return

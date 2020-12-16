@@ -26,6 +26,9 @@ import {
   ListVaultsMetadataOnlyDocument,
   DeregisterMutation,
   DeregisterDocument,
+  EntitlementsConsumption,
+  GetEntitlementsForSvsQuery,
+  GetEntitlementsForSvsDocument,
 } from '../gen/graphqlTypes'
 import {
   FatalError,
@@ -40,6 +43,7 @@ import {
   Logger,
 } from '@sudoplatform/sudo-common'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
+import {} from '@sudoplatform/sudo-entitlements'
 
 /**
  * AppSync wrapper to use to invoke Secure Vault Service APIs.
@@ -384,6 +388,38 @@ export class ApiClient {
     }
   }
 
+  public async getEntitlements(): Promise<EntitlementsConsumption> {
+    if (!(await this.sudoUserClient.isSignedIn())) {
+      throw new NotSignedInError()
+    }
+
+    let result
+    try {
+      result = await this.client.query<GetEntitlementsForSvsQuery>({
+        query: GetEntitlementsForSvsDocument,
+        fetchPolicy: 'no-cache',
+      })
+    } catch (err) {
+      const error = err.graphQLErrors?.[0]
+      if (error) {
+        throw this.graphQLErrorsToClientError(error)
+      } else {
+        throw new UnknownGraphQLError(error)
+      }
+    }
+
+    const error = result.errors?.[0]
+    if (error) {
+      throw this.graphQLErrorsToClientError(error)
+    }
+
+    if (result.data) {
+      return result.data.getEntitlementsForSvs
+    } else {
+      throw new FatalError('getVault did not return any result.')
+    }
+  }
+
   public reset(): void {
     this.client.clearStore()
     this.client = new AWSAppSyncClient({
@@ -398,7 +434,7 @@ export class ApiClient {
   }
 
   private graphQLErrorsToClientError(error: AppSyncError): Error {
-    this.logger.error({ error }, 'GraphQL call failed.')
+    this.logger.error('GraphQL call failed.', { error })
 
     if (error.errorType === 'DynamoDB:ConditionalCheckFailedException') {
       return new VersionMismatchError()

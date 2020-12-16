@@ -1,0 +1,43 @@
+fragment EntitlementConsumer on EntitlementConsumer {
+  id
+  issuer
+}
+
+fragment EntitlementConsumption on EntitlementConsumption {
+  name
+  consumer {
+    ...EntitlementConsumer
+  }
+  value
+  available
+  consumed
+}
+
+fragment Entitlement on Entitlement {
+  name
+  description
+  value
+}
+
+fragment UserEntitlements on UserEntitlements {
+  version
+  entitlementsSetName
+  entitlements {
+    ...Entitlement
+  }
+}
+
+fragment EntitlementsConsumption on EntitlementsConsumption {
+  entitlements {
+    ...UserEntitlements
+  }
+  consumption {
+    ...EntitlementConsumption
+  }
+}
+
+query GetEntitlementsForSvs {
+  getEntitlementsForSvs {
+    ...EntitlementsConsumption
+  }
+}

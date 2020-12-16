@@ -1672,17 +1672,31 @@
     apollo-link-http "^1.5.17"
     aws-appsync "^4.0.1"
 
-"@sudoplatform/sudo-common@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-common/-/sudo-common-2.0.0.tgz#cd20c3d77eb3200f611ac8b0ccd7ab0d7b4b5f45"
-  integrity sha512-qkQqY1SDrwmn6t0bW5Qo0+GCK0sH1PRoS8UDYDOmPTILTzTyCjdAmCEZAtKQombne061YedYQRpBZR2GiTRSlw==
+"@sudoplatform/sudo-common@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-common/-/sudo-common-3.0.0.tgz#d904b1be6ffa8625a4b7cbfe944d93d843e0c527"
+  integrity sha512-CW/h3FqRd1KlllWqlcaunwC8spSdrs0qKnnUeQ7ycb9ZVRz14v/m+Pht4KRp6AtxuZ9z6fTLdkO9Cb++A0qB5g==
   dependencies:
     browser-bunyan "^1.6.3"
 
-"@sudoplatform/sudo-profiles@^2.0.0":
+"@sudoplatform/sudo-entitlements@^2.0.0":
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-profiles/-/sudo-profiles-2.0.0.tgz#31a5b1b220d013fb2addb5e4e65f84c4102fa491"
-  integrity sha512-Yi7VgQ/GW0rBUw9YPQJM8wj5dg/pyGC/UdIQLjOcRO/+XDDHFlIuyrJHJqHokKbJu9LESraf8gg8XwdatFR3jw==
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-entitlements/-/sudo-entitlements-2.0.0.tgz#f7e0aa50383b60fb811322edaa9af09e675d27f5"
+  integrity sha512-Lsa9jrS/Jc11w9+ioNjz8e8PE7AFG92U8R4xt0VhIx4V4sPx5o3BtYg55idKBZNNgqH/GZ2x/JCsT6DJL3zaZw==
+  dependencies:
+    apollo-cache-inmemory "^1.6.6"
+    aws-appsync "^4.0.1"
+    fp-ts "^2.9.0"
+    graphql "^15.4.0"
+    io-ts "^2.2.13"
+    monocle-ts "^2.3.3"
+    newtype-ts "^0.3.4"
+    redux "^4.0.5"
+
+"@sudoplatform/sudo-profiles@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-profiles/-/sudo-profiles-4.0.0.tgz#16de4eaa6475abf31108f8821829297395f9046b"
+  integrity sha512-xW21Hb8EzuMSH7yt8OWhPh53N2FKL60cd7dlKnQ5H0wZoWfDEaH1BAD+0fo34HzYh6H0AOcko5TZb2rtNACXBA==
   dependencies:
     "@types/bunyan" "^1.8.6"
     "@types/lodash" "^4.14.158"
@@ -1709,10 +1723,10 @@
     uuid "^8.2.0"
     ws "^7.3.1"
 
-"@sudoplatform/sudo-user@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-user/-/sudo-user-2.0.0.tgz#e2110860c6cc8aa5aefc93e6f150e8bb78148007"
-  integrity sha512-GxP1jgJRR99hm5uJ+D+j5kARf1wGhPqpwW/LHVSOirOmounNvFkdsZ/8vYQ//mkQ2m9cDiHKCNu/ytq/Ff8KSA==
+"@sudoplatform/sudo-user@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-user/-/sudo-user-3.0.0.tgz#3c4688892abd9ce8befbd87e248c3594572226a6"
+  integrity sha512-wPimVct0V4ej+G3hwChJ/Kt7TI4Wpv7rYlSqfefjCyqnFE1SeGPlhGY1z2bX95oJ9amiRI9i73dhHmnqDuZJFw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
     amazon-cognito-auth-js "^1.3.3"
@@ -4143,6 +4157,11 @@ fp-ts@^2.8.3:
   resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.8.3.tgz#c09652bbf21e64d65a9f93587ad549ab0e03abe7"
   integrity sha512-oGD3BTSzFCPs9alaI/2gh0SCNKyhPXkpeIBvkXNvnoczHfDAUd2HHtotCdLO0hOTTTTx8VKA0mhhR7LUNo+cKg==
 
+fp-ts@^2.9.0:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.9.1.tgz#24557f66f9221f8a1922fce6cbe2b8ea6d0f3929"
+  integrity sha512-9++IpEtF2blK7tfSV+iHxO3KXdAGO/bPPQtUYqzC6XKzGOWNctqvlf13SpXxcu2mYaibOvneh/m9vAPLAHdoRQ==
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/fragment-cache/-/fragment-cache-0.2.1.tgz#4290fad27f13e89be7f33799c6bc5a0abfff0d19"
@@ -4364,6 +4383,11 @@ graphql@0.13.0:
   integrity sha512-WlO+ZJT9aY3YrBT+H5Kk+eVb3OVVehB9iRD/xqeHdmrrn4AFl5FIcOpfHz/vnBr6Y6JthGMlnFqU8XRnDjSR7A==
   dependencies:
     iterall "1.1.x"
+
+graphql@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.4.0.tgz#e459dea1150da5a106486ba7276518b5295a4347"
+  integrity sha512-EB3zgGchcabbsU9cFe1j+yxdzKQKAbGUWRb13DsrsMN1yyfmmIq+2+L5MqVWcDCE4V89R5AyUOi7sMOGxdsYtA==
 
 growly@^1.3.0:
   version "1.3.0"
@@ -4614,10 +4638,10 @@ inherits@2, inherits@^2.0.3, inherits@~2.0.3:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-ini@~1.3.0:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
-  integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
+ini@^1.3.6, ini@~1.3.0:
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
+  integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
 inquirer@^7.3.3:
   version "7.3.3"
@@ -4659,6 +4683,11 @@ io-ts@^2.2.10:
   version "2.2.11"
   resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.11.tgz#968a02f57b740fd422c8f9cf7ee99187854636f9"
   integrity sha512-lGxyPvZNhmo1U1Hy0ovjRtXljG6F59R3bZErK9XjiIQPlt4nuzbDNSwvalXvS7Z8iSZhx2S5GpNz5tVhpnDf6w==
+
+io-ts@^2.2.13:
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.13.tgz#e04016685e863dd5cffb2b5262c5c9c74432dfda"
+  integrity sha512-BYJgE/BanovJKDvCnAkrr7f3gTucSyk+Sr5VtpouBO1/YfBKUyIn2z1ODG8LEF+1D4sjKZ3Bd/A5/v8JrJe5UQ==
 
 ip-regex@^2.1.0:
   version "2.1.0"
@@ -5853,7 +5882,7 @@ log-update@^2.3.0:
     cli-cursor "^2.0.0"
     wrap-ansi "^3.0.1"
 
-loose-envify@^1.0.0, loose-envify@^1.1.0:
+loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
@@ -6828,6 +6857,14 @@ redux@^3.7.2:
     loose-envify "^1.1.0"
     symbol-observable "^1.0.3"
 
+redux@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.5.tgz#4db5de5816e17891de8a80c424232d06f051d93f"
+  integrity sha512-VSz1uMAH24DM6MF72vcojpYPtrTUu3ByVWfPL1nPfVRb5mZVTve5GnNCUV53QM/BZ66xfWrm0CTWoM+Xlz8V1w==
+  dependencies:
+    loose-envify "^1.4.0"
+    symbol-observable "^1.2.0"
+
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.2.0.tgz#e5de7111d655e7ba60c057dbe9ff37c87e65cdec"
@@ -7637,7 +7674,7 @@ supports-hyperlinks@^2.0.0:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
 
-symbol-observable@^1.0.2, symbol-observable@^1.0.3, symbol-observable@^1.0.4, symbol-observable@^1.1.0:
+symbol-observable@^1.0.2, symbol-observable@^1.0.3, symbol-observable@^1.0.4, symbol-observable@^1.1.0, symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
@@ -7915,10 +7952,10 @@ typedoc@0.19.2:
     shelljs "^0.8.4"
     typedoc-default-themes "^0.11.4"
 
-typescript@^3.9.7:
-  version "3.9.7"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
-  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
+typescript@^4.1.3:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.3.tgz#519d582bd94cba0cf8934c7d8e8467e473f53bb7"
+  integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
 
 ua-parser-js@^0.7.18:
   version "0.7.22"

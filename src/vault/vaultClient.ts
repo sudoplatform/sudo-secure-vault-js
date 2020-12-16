@@ -11,7 +11,7 @@ import {
   FatalError,
   UserNotConfirmedError,
   Logger,
-  getLogger,
+  DefaultLogger,
 } from '@sudoplatform/sudo-common'
 import { AuthClient } from '../client/authClient'
 import { Config } from './config'
@@ -173,6 +173,7 @@ export interface SudoSecureVaultClient {
    * @returns Updated vault's metadata.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link InsufficientEntitlementsError}
    * @throws {@link VersionMismatchError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
@@ -209,6 +210,7 @@ export interface SudoSecureVaultClient {
    * @returns Retrieved vault.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link InsufficientEntitlementsError}
    * @throws {@link InvalidVaultError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
@@ -228,6 +230,7 @@ export interface SudoSecureVaultClient {
    * @returns List containing the vaults retrieved.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link InsufficientEntitlementsError}
    * @throws {@link InvalidVaultError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
@@ -255,6 +258,7 @@ export interface SudoSecureVaultClient {
    * @param newPassword - New vault password.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link InsufficientEntitlementsError}
    * @throws {@link InvalidVaultError}
    * @throws {@link VersionMismatchError}
    * @throws {@link UnknownGraphQLError}
@@ -297,7 +301,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     securityProvder?: SecurityProvider,
     logger?: Logger,
   ) {
-    this.logger = logger ?? getLogger()
+    this.logger = logger ?? new DefaultLogger('SudoSecureVault', 'info')
 
     this.config =
       config ??
@@ -306,7 +310,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
         'secureVaultService',
       )
 
-    this.logger.info({ config }, 'Intializating the client.')
+    this.logger.info('Intializating the client.', { config })
 
     this.pbkdfRounds = this.config.pbkdfRounds
     this.sudoUserClient = sudoUserClient
@@ -493,7 +497,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     blob: ArrayBuffer,
     blobFormat: string,
   ): Promise<VaultMetadata> {
-    this.logger.info({ id, version }, 'Updating a vault.')
+    this.logger.info('Updating a vault.', { id, version })
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
@@ -543,7 +547,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
   }
 
   async deleteVault(id: string): Promise<VaultMetadata | undefined> {
-    this.logger.info({ id }, 'Deleting a vault.')
+    this.logger.info('Deleting a vault.', { id })
 
     const vault = await this.apiClient.deleteVault({ id: id })
     return vault
@@ -570,7 +574,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     password: ArrayBuffer,
     id: string,
   ): Promise<Vault | undefined> {
-    this.logger.info({ id }, 'Retrieving a vault.')
+    this.logger.info('Retrieving a vault.', { id })
 
     const initializationData = await this.getInitializationData()
     if (initializationData) {
