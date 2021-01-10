@@ -1,9 +1,8 @@
 import { DefaultSudoSecureVaultClient } from '../../src/vault/vaultClient'
 import { DefaultSudoUserClient } from '@sudoplatform/sudo-user'
 import {
-  DefaultKeyManager,
   DefaultSudoProfilesClient,
-  KeyStore,
+  InMemoryKeyStore,
 } from '@sudoplatform/sudo-profiles'
 import {
   DefaultConfigurationManager,
@@ -14,13 +13,11 @@ import { v4 } from 'uuid'
 import Storage from 'dom-storage'
 import { TESTAuthenticationProvider } from '@sudoplatform/sudo-user/lib/user/auth-provider'
 import { Sudo } from '@sudoplatform/sudo-profiles/lib/sudo/sudo'
-import { DefaultApiClientManager } from '@sudoplatform/sudo-api-client'
 import {
   InvalidOwnershipProofError,
   NotAuthorizedError,
   VersionMismatchError,
 } from '@sudoplatform/sudo-common'
-import { ApiClient } from '@sudoplatform/sudo-profiles/lib/client/apiClient'
 global.localStorage = new Storage(null, { strict: true })
 global.sessionStorage = new Storage(null, { strict: true })
 global.crypto = require('isomorphic-webcrypto')
@@ -57,22 +54,13 @@ describe('SudoSecureVaultClient', () => {
     DefaultConfigurationManager.getInstance().setConfig(config)
 
     const sudoUserClient = new DefaultSudoUserClient()
-    const apiClientManager = DefaultApiClientManager.getInstance()
-    apiClientManager.setAuthClient(sudoUserClient)
-    const appSyncClient = apiClientManager.getClient({
+    const sudoProfilesClient = new DefaultSudoProfilesClient({
+      sudoUserClient: sudoUserClient,
+      keyStore: new InMemoryKeyStore(),
       disableOffline: true,
     })
-    const apiClient = new ApiClient(sudoUserClient, appSyncClient)
-    const keyStore = new KeyStore()
-    const keyManager = new DefaultKeyManager(keyStore)
-    keyManager.setSymmetricKeyId('dummy_key_id')
-    keyManager.insertKey('dummy_key_id', new Uint8Array(new ArrayBuffer(16)))
 
-    const sudoProfilesClient = new DefaultSudoProfilesClient(
-      sudoUserClient,
-      keyManager,
-      apiClient,
-    )
+    sudoProfilesClient.pushSymmetricKey('dummy_key_id', 'dummy_key')
 
     const client = new DefaultSudoSecureVaultClient(sudoUserClient)
 
