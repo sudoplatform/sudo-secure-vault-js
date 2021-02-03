@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "@sudoplatform/sudo-common": "^3.2.0",
-    "@sudoplatform/sudo-user": "^3.1.0"
+    "@sudoplatform/sudo-user": "^4.0.0"
   },
   "resolutions": {
     "**/apollo-link": "^1.2.14",
@@ -65,11 +65,11 @@
     "@graphql-codegen/typescript": "^1.17.6",
     "@graphql-codegen/typescript-operations": "^1.17.6",
     "@graphql-typed-document-node/apollo-client-2": "^0.0.1",
-    "@sudoplatform/sudo-api-client": "^3.0.0",
+    "@sudoplatform/sudo-api-client": "^4.0.0",
     "@sudoplatform/sudo-common": "^3.2.0",
-    "@sudoplatform/sudo-profiles": "^4.0.1",
-    "@sudoplatform/sudo-user": "^3.1.0",
-    "@sudoplatform/sudo-entitlements": "^3.1.1",
+    "@sudoplatform/sudo-profiles": "^5.0.0",
+    "@sudoplatform/sudo-user": "^4.0.0",
+    "@sudoplatform/sudo-entitlements": "^4.0.0",
     "@types/jest": "^26.0.10",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",

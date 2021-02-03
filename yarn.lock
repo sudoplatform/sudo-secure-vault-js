@@ -1658,10 +1658,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sudoplatform/sudo-api-client@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-api-client/-/sudo-api-client-3.0.0.tgz#21bb5fe51b565ef8a9e04bcdc83bfed71817b358"
-  integrity sha512-JV0VS5tINz6WUvY4doxrJ0EJUDIIKERrZs/XBY7AOkSJHSFS35LJ5x6vxYtYtibGTNzkyhb/MbqESggaxXJpcw==
+"@sudoplatform/sudo-api-client@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-api-client/-/sudo-api-client-4.0.0.tgz#345bcd61de4037a722d26eac2f559bdf19e4aed4"
+  integrity sha512-L1w/XijpN9OW5G3c0Dqlei+42gqxhFKUS2IE7z4lKOuJ67UhgWnbQ+/0NCD1D/3LBbKG98epXyknPUgRVQ5V2w==
   dependencies:
     "@redux-offline/redux-offline" "^2.6.0-native.0"
     "@types/graphql" "^14.5.0"
@@ -1679,10 +1679,10 @@
   dependencies:
     browser-bunyan "^1.6.3"
 
-"@sudoplatform/sudo-entitlements@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-entitlements/-/sudo-entitlements-3.1.1.tgz#ec5faa748a88d90efa1435ae37e1e4bf1b3afaa2"
-  integrity sha512-wsbX4J1UuzgaLGGtTd2jlcxReGLwTeNDrsv5yd8MG0v1Ya1z8DWcVmwf69pIWgpAjQDYNfZLWDT456XyJztG7Q==
+"@sudoplatform/sudo-entitlements@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-entitlements/-/sudo-entitlements-4.0.0.tgz#5534a65ef7b494708589a29bd76de5ec5730f228"
+  integrity sha512-/izP2uRkiBJ6/VyDxKCnOGAC7Y1woHd5VTJmYS6MVDs1M/LWnK6jN7EJkzk+r6QiSJ4+Pxdy05T/XyuuyLLkpQ==
   dependencies:
     apollo-cache-inmemory "^1.6.6"
     aws-appsync "^4.0.1"
@@ -1693,10 +1693,10 @@
     newtype-ts "^0.3.4"
     redux "^4.0.5"
 
-"@sudoplatform/sudo-profiles@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-profiles/-/sudo-profiles-4.0.1.tgz#38c1aa1455a9255cf5f2a81c5ea179b35b0b4e2d"
-  integrity sha512-+tPxAEZkqLVkfbYLGiRQXf3r3chuJrbH6mkWsOJvCbmVu6WGP62Rlji3IIF5JKL5Tu2NdXeo0SdWaqRw1Mqeog==
+"@sudoplatform/sudo-profiles@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-profiles/-/sudo-profiles-5.0.0.tgz#41699abf56c6fc36d8009316f16272a97d4d2957"
+  integrity sha512-U+O1tQ8EFaT2aLPxLWEd8nlzLrBMv4J+PkMOxOUTUZ8rn/xp4L8+YQ3ilpmzeAz9d17582fMAHBGZuav4jYmXw==
   dependencies:
     "@types/bunyan" "^1.8.6"
     "@types/lodash" "^4.14.158"
@@ -1723,10 +1723,10 @@
     uuid "^8.2.0"
     ws "^7.3.1"
 
-"@sudoplatform/sudo-user@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-user/-/sudo-user-3.1.0.tgz#88147459af1715a89c81b68752433d049949803d"
-  integrity sha512-AN7GoP9TGyNzSVw29ru9Q04LZDU/phd6dSMFkCPj3XNG9XxDZCWIp+O+2BtpqcNH3JHug9uQADWPqu07zy8h8A==
+"@sudoplatform/sudo-user@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-user/-/sudo-user-4.0.0.tgz#310f43d3f0137d7df8c9c106fabb63006341a39d"
+  integrity sha512-/geYjpxX7CNZXqlatmTqhhlPH0gNk36DZvoWOP8d72jlZM3+7jNaKttJcF43Rssa/napxkA3qrGns2HElFiXgg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
     amazon-cognito-auth-js "^1.3.3"
