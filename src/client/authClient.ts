@@ -11,7 +11,9 @@ import {
   FatalError,
   NotAuthorizedError,
   Logger,
+  ServiceError,
 } from '@sudoplatform/sudo-common'
+import { AlreadyRegisteredError } from '../global/error'
 
 /**
  * Authentication tokens.
@@ -81,9 +83,17 @@ export class AuthClient {
             ) {
               this.logger.error('User is not authorized to register.')
               reject(new NotAuthorizedError())
+            } else if (
+              error.message.includes('sudoplatform.vault.AlreadyRegistered')
+            ) {
+              this.logger.error('User is already registered.')
+              reject(new AlreadyRegisteredError())
+            } else if (error.message.includes('sudoplatform.ServiceError')) {
+              this.logger.error('Service error encountered.')
+              reject(new ServiceError(`${error}`))
             } else {
               this.logger.error('Unexpected error encountered.', { error })
-              reject(error)
+              reject(new FatalError(`${error}`))
             }
             return
           }

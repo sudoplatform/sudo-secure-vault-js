@@ -14,3 +14,14 @@ export class InvalidVaultError extends Error {
     this.name = 'InvalidVaultError'
   }
 }
+
+/**
+ * The vault user is already registered. This error can be thrown if `register`
+ * API was called multiple times without first calling `deregister` API.
+ */
+export class AlreadyRegisteredError extends Error {
+  constructor() {
+    super('Vault user already registered.')
+    this.name = 'AlreadyRegisteredError'
+  }
+}

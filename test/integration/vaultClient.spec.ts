@@ -18,6 +18,7 @@ import {
   NotAuthorizedError,
   VersionMismatchError,
 } from '@sudoplatform/sudo-common'
+import { AlreadyRegisteredError } from '../../src/global/error'
 global.localStorage = new Storage(null, { strict: true })
 global.sessionStorage = new Storage(null, { strict: true })
 global.crypto = require('isomorphic-webcrypto')
@@ -95,6 +96,17 @@ describe('SudoSecureVaultClient', () => {
     it('Register a vault user.', async () => {
       await client.register(key, stringToBuffer('passw0rd'))
       expect(await client.isRegistered()).toBeTruthy()
+    }, 30000)
+
+    it('Register a duplicate user.', async () => {
+      await client.register(key, stringToBuffer('passw0rd'))
+      expect(await client.isRegistered()).toBeTruthy()
+
+      try {
+        await client.register(key, stringToBuffer('passw0rd'))
+      } catch (err) {
+        expect(err).toBeInstanceOf(AlreadyRegisteredError)
+      }
     }, 30000)
 
     it('Create, update, get, list and delete a vault.', async () => {
