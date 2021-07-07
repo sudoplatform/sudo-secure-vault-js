@@ -1,12 +1,11 @@
 import { DefaultSudoSecureVaultClient } from '../../src/vault/vaultClient'
 import { DefaultSudoUserClient } from '@sudoplatform/sudo-user'
-import {
-  DefaultSudoProfilesClient,
-  InMemoryKeyStore,
-} from '@sudoplatform/sudo-profiles'
+import { DefaultSudoProfilesClient } from '@sudoplatform/sudo-profiles'
 import {
   DefaultConfigurationManager,
   InsufficientEntitlementsError,
+  LimitExceededError,
+  RequestFailedError,
 } from '@sudoplatform/sudo-common'
 import { readFileSync, existsSync } from 'fs'
 import { v4 } from 'uuid'
@@ -19,6 +18,10 @@ import {
   VersionMismatchError,
 } from '@sudoplatform/sudo-common'
 import { AlreadyRegisteredError } from '../../src/global/error'
+import { ApolloLink, Observable } from 'apollo-link'
+import { AUTH_TYPE } from 'aws-appsync'
+import { AuthLink } from 'aws-appsync-auth-link'
+import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link'
 global.localStorage = new Storage(null, { strict: true })
 global.sessionStorage = new Storage(null, { strict: true })
 global.crypto = require('isomorphic-webcrypto')
@@ -57,7 +60,6 @@ describe('SudoSecureVaultClient', () => {
     const sudoUserClient = new DefaultSudoUserClient()
     const sudoProfilesClient = new DefaultSudoProfilesClient({
       sudoUserClient: sudoUserClient,
-      keyStore: new InMemoryKeyStore(),
       disableOffline: true,
     })
 
@@ -87,11 +89,9 @@ describe('SudoSecureVaultClient', () => {
       await client.deregister()
     }, 30000)
 
-    afterAll(
-      async (): Promise<void> => {
-        await sudoUserClient.deregister()
-      },
-    )
+    afterAll(async (): Promise<void> => {
+      await sudoUserClient.deregister()
+    })
 
     it('Register a vault user.', async () => {
       await client.register(key, stringToBuffer('passw0rd'))
@@ -351,6 +351,97 @@ describe('SudoSecureVaultClient', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(InsufficientEntitlementsError)
       }
+    }, 30000)
+
+    it('Create vault exceeding the limit.', async () => {
+      await client.register(key, stringToBuffer('passw0rd'))
+      expect(await client.isRegistered()).toBeTruthy()
+
+      await sudoProfilesClient.redeem('sudoplatform.sudo.max=3', 'entitlements')
+      const sudo = await sudoProfilesClient.createSudo(new Sudo())
+
+      const ownershipProof = await sudoProfilesClient.getOwnershipProof(
+        sudo.id,
+        'sudoplatform.secure-vault.vault',
+      )
+
+      await expect(
+        client.createVault(
+          key,
+          stringToBuffer('passw0rd'),
+          new Uint8Array(500000),
+          'text/utf8',
+          ownershipProof,
+        ),
+      ).rejects.toThrowError(LimitExceededError)
+    }, 30000)
+
+    it('Create vault with network or server errors.', async () => {
+      let networkError: any = {
+        name: 'name',
+        message: 'message',
+        statusCode: 401,
+      }
+
+      const clientOptions = {
+        url: 'https://beed3uxqqnc3pmfj3qgah2fiz4.appsync-api.us-east-1.amazonaws.com/graphql',
+        region: '',
+        auth: {
+          type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+          jwtToken: async () => await sudoUserClient.getLatestAuthToken(),
+        },
+      } as const
+
+      const mockLink = new ApolloLink(() => {
+        return new Observable((observer) => {
+          observer.error(networkError)
+        })
+      })
+
+      const authLink = new AuthLink(clientOptions)
+      const subscriptionLink = createSubscriptionHandshakeLink(
+        clientOptions,
+        mockLink,
+      )
+      const link = ApolloLink.from([authLink, subscriptionLink])
+
+      const newClient = new DefaultSudoSecureVaultClient(
+        sudoUserClient,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        link,
+      )
+
+      await newClient.register(key, stringToBuffer('passw0rd'))
+      expect(await newClient.isRegistered()).toBeTruthy()
+
+      await expect(
+        newClient.createVault(
+          key,
+          stringToBuffer('passw0rd'),
+          stringToBuffer('dummy_blob'),
+          'text/utf8',
+          'dummy_ownership_proof',
+        ),
+      ).rejects.toThrowError(NotAuthorizedError)
+
+      networkError = {
+        name: 'name',
+        message: 'message',
+      }
+
+      await expect(
+        newClient.createVault(
+          key,
+          stringToBuffer('passw0rd'),
+          stringToBuffer('dummy_blob'),
+          'text/utf8',
+          'dummy_ownership_proof',
+        ),
+      ).rejects.toThrowError(RequestFailedError)
     }, 30000)
   } else {
     it('Skip all tests.', () => {

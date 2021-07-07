@@ -10,6 +10,7 @@ import {
   ServiceError,
   FatalError,
   UserNotConfirmedError,
+  RequestFailedError,
   Logger,
   DefaultLogger,
 } from '@sudoplatform/sudo-common'
@@ -22,6 +23,7 @@ import { SecurityProvider } from '../security/securityProvider'
 import { WebCryptoSecurityProvider } from '../security/webCryptoSecurityProvider'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
+import { ApolloLink } from 'apollo-link'
 
 /**
  * Vault owner.
@@ -122,6 +124,8 @@ export interface SudoSecureVaultClient {
    * testing and the consuming app is not expected to use this method.
    *
    * @returns Initialization data if one exists.
+   *
+   * @throws {@link RequestFailedError}
    */
   getInitializationData(): Promise<InitializationData | undefined>
 
@@ -148,7 +152,9 @@ export interface SudoSecureVaultClient {
    * @throws {@link NotAuthorizedError}
    * @throws {@link InvalidOwnershipProofError}
    * @throws {@link InsufficientEntitlementsError}
+   * @throws {@link LimitExceededError}
    * @throws {@link UnknownGraphQLError}
+   * @throws {@link RequestFailedError}
    * @throws {@link ServiceError}
    * @throws {@link FatalError}
    */
@@ -175,6 +181,8 @@ export interface SudoSecureVaultClient {
    * @throws {@link NotAuthorizedError}
    * @throws {@link InsufficientEntitlementsError}
    * @throws {@link VersionMismatchError}
+   * @throws {@link LimitExceededError}
+   * @throws {@link RequestFailedError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    */
@@ -195,6 +203,7 @@ export interface SudoSecureVaultClient {
    * @returns Deleted vault's metadata.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link RequestFailedError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    */
@@ -212,6 +221,7 @@ export interface SudoSecureVaultClient {
    * @throws {@link NotAuthorizedError}
    * @throws {@link InsufficientEntitlementsError}
    * @throws {@link InvalidVaultError}
+   * @throws {@link RequestFailedError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    */
@@ -232,6 +242,7 @@ export interface SudoSecureVaultClient {
    * @throws {@link NotAuthorizedError}
    * @throws {@link InsufficientEntitlementsError}
    * @throws {@link InvalidVaultError}
+   * @throws {@link RequestFailedError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    */
@@ -244,6 +255,7 @@ export interface SudoSecureVaultClient {
    * @returns List containing the metadata of vaults retrieved.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link RequestFailedError}
    * @throws {@link UnknownGraphQLError}
    * @throws {@link ServiceError}
    */
@@ -279,6 +291,7 @@ export interface SudoSecureVaultClient {
    * De-registers the current user from Secure Vault service.
    *
    * @throws {@link NotAuthorizedError}
+   * @throws {@link RequestFailedError}
    */
   deregister(): Promise<void>
 }
@@ -300,6 +313,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     apiClient?: ApiClient,
     securityProvder?: SecurityProvider,
     logger?: Logger,
+    link?: ApolloLink,
   ) {
     this.logger = logger ?? new DefaultLogger('SudoSecureVault', 'info')
 
@@ -327,6 +341,7 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
         this.config.region,
         this.config.apiUrl,
         this.logger,
+        link,
       )
   }
 
@@ -389,7 +404,8 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
     const token = this.sudoUserClient.getIdToken()
     const sub = this.sudoUserClient.getSubject()
     if (token && sub) {
-      const authenticationSalt = this.securityProvider.generateKeyDerivationSalt()
+      const authenticationSalt =
+        this.securityProvider.generateKeyDerivationSalt()
       const encryptionSalt = this.securityProvider.generateKeyDerivationSalt()
       const secret = await this.securityProvider.generateAuthenticationSecret(
         key,
@@ -464,7 +480,8 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
       const vault = await this.apiClient.createVault({
         token,
         ownershipProofs: [ownershipProof],
-        encryptionMethod: this.securityProvider.getEncryptionAlgorithmSpecifier(),
+        encryptionMethod:
+          this.securityProvider.getEncryptionAlgorithmSpecifier(),
         blobFormat,
         blob: Base64.encode(Buffer.concat(encrypted, iv)),
       })
@@ -521,7 +538,8 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
         token,
         id,
         expectedVersion: version,
-        encryptionMethod: this.securityProvider.getEncryptionAlgorithmSpecifier(),
+        encryptionMethod:
+          this.securityProvider.getEncryptionAlgorithmSpecifier(),
         blobFormat,
         blob: Base64.encode(Buffer.concat(encrypted, iv)),
       })
@@ -730,18 +748,20 @@ export class DefaultSudoSecureVaultClient implements SudoSecureVaultClient {
         const vaults = await this.listVaults(key, oldPassword)
 
         // Change the authentication password.
-        const oldPasswordSecret = await this.securityProvider.generateAuthenticationSecret(
-          key,
-          oldPassword,
-          initializationData.authenticationSalt,
-          initializationData.pbkdfRounds,
-        )
-        const newPasswordSecret = await this.securityProvider.generateAuthenticationSecret(
-          key,
-          newPassword,
-          initializationData.authenticationSalt,
-          initializationData.pbkdfRounds,
-        )
+        const oldPasswordSecret =
+          await this.securityProvider.generateAuthenticationSecret(
+            key,
+            oldPassword,
+            initializationData.authenticationSalt,
+            initializationData.pbkdfRounds,
+          )
+        const newPasswordSecret =
+          await this.securityProvider.generateAuthenticationSecret(
+            key,
+            newPassword,
+            initializationData.authenticationSalt,
+            initializationData.pbkdfRounds,
+          )
         await this.authClient.changePassword(
           sub,
           Base64.encode(oldPasswordSecret),

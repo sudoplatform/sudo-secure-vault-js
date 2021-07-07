@@ -7,6 +7,12 @@ export class Base64 {
   }
 
   static encode(buffer: ArrayBuffer): string {
-    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    let encoded = ''
+    const bytes = new Uint8Array(buffer)
+    const len = bytes.byteLength
+    for (let i = 0; i < len; i++) {
+      encoded += String.fromCharCode(bytes[i])
+    }
+    return btoa(encoded)
   }
 }

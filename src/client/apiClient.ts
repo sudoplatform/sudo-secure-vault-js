@@ -1,4 +1,5 @@
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
+import { ApolloLink } from 'apollo-link'
 import { createHttpLink } from 'apollo-link-http'
 import { AuthLink } from 'aws-appsync-auth-link'
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link'
@@ -41,9 +42,13 @@ import {
   InsufficientEntitlementsError,
   NotAuthorizedError,
   Logger,
+  LimitExceededError,
+  isAppSyncNetworkError,
+  mapNetworkErrorToClientError,
 } from '@sudoplatform/sudo-common'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 import {} from '@sudoplatform/sudo-entitlements'
+import { ServerError } from '../global/error'
 
 /**
  * AppSync wrapper to use to invoke Secure Vault Service APIs.
@@ -60,41 +65,18 @@ export class ApiClient {
     region: string,
     graphqlUrl: string,
     logger: Logger,
+    link?: ApolloLink,
   ) {
     this.sudoUserClient = sudoUserClient
     this.region = region
     this.graphqlUrl = graphqlUrl
     this.logger = logger
 
-    const clientOptions = {
-      url: graphqlUrl,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: async () => await this.sudoUserClient.getLatestAuthToken(),
-      },
-    } as const
-
-    // The default AppSync link retries for ~10 minutes on network errors.
-    // However, we want to surface these errors to the caller.
-    // Since the default AppSync link is not very configurable, we have to
-    // create a custom link that just supports GraphQL subscriptions + HTTP.
-    // See https://github.com/awslabs/aws-mobile-appsync-sdk-js/blob/b9920f7404/packages/aws-appsync/src/client.ts#L84
-    const customLink = new AuthLink(clientOptions).concat(
-      createSubscriptionHandshakeLink(
-        clientOptions,
-        createHttpLink({ uri: clientOptions.url }),
-      ),
-    )
-
-    this.client = new AWSAppSyncClient(
-      {
-        ...clientOptions,
-        disableOffline: true,
-      },
-      {
-        link: customLink,
-      },
+    this.client = this.createAppSyncClient(
+      this.graphqlUrl,
+      this.region,
+      this.sudoUserClient,
+      link,
     )
   }
 
@@ -111,6 +93,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -147,6 +133,10 @@ export class ApiClient {
         errorPolicy: 'all',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -182,6 +172,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -217,6 +211,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -253,6 +251,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -290,6 +292,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -331,6 +337,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -368,6 +378,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -400,6 +414,10 @@ export class ApiClient {
         fetchPolicy: 'no-cache',
       })
     } catch (err) {
+      if (isAppSyncNetworkError(err)) {
+        throw mapNetworkErrorToClientError(err)
+      }
+
       const error = err.graphQLErrors?.[0]
       if (error) {
         throw this.graphQLErrorsToClientError(error)
@@ -422,19 +440,60 @@ export class ApiClient {
 
   public reset(): void {
     this.client.clearStore()
-    this.client = new AWSAppSyncClient({
-      url: this.graphqlUrl,
-      region: this.region,
-      auth: {
-        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: async () => await this.sudoUserClient.getLatestAuthToken(),
-      },
-      disableOffline: true,
-    })
+    this.client = this.client = this.createAppSyncClient(
+      this.graphqlUrl,
+      this.region,
+      this.sudoUserClient,
+    )
   }
 
+  private createAppSyncClient(
+    url: string,
+    region: string,
+    sudoUserClient: SudoUserClient,
+    link?: ApolloLink,
+  ): AWSAppSyncClient<NormalizedCacheObject> {
+    const clientOptions = {
+      url,
+      region,
+      auth: {
+        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+        jwtToken: async () => await sudoUserClient.getLatestAuthToken(),
+      },
+    } as const
+
+    // The default AppSync link retries for ~10 minutes on network errors.
+    // However, we want to surface these errors to the caller.
+    // Since the default AppSync link is not very configurable, we have to
+    // create a custom link that just supports GraphQL subscriptions + HTTP.
+    // See https://github.com/awslabs/aws-mobile-appsync-sdk-js/blob/b9920f7404/packages/aws-appsync/src/client.ts#L84
+    const customLink =
+      link ??
+      ApolloLink.from([
+        new AuthLink(clientOptions),
+        createSubscriptionHandshakeLink(
+          clientOptions,
+          createHttpLink({ uri: clientOptions.url }),
+        ),
+      ])
+
+    return new AWSAppSyncClient(
+      {
+        ...clientOptions,
+        disableOffline: true,
+      },
+      {
+        link: customLink,
+      },
+    )
+  }
+
+  // private graphQLClientErrorToClientError(error: Error): Error {
+  //   const graphQLError = error.graphQLErrors?.[0]
+  // }
+
   private graphQLErrorsToClientError(error: AppSyncError): Error {
-    this.logger.error('GraphQL call failed.', { error })
+    this.logger.error('GraphQL error', { error })
 
     if (error.errorType === 'DynamoDB:ConditionalCheckFailedException') {
       return new VersionMismatchError()
@@ -453,8 +512,23 @@ export class ApiClient {
       error.errorType === 'sudoplatform.InsufficientEntitlementsError'
     ) {
       return new InsufficientEntitlementsError()
+    } else if (error.errorType === 'sudoplatform.LimitExceededError') {
+      return new LimitExceededError()
     } else {
       return new UnknownGraphQLError(error)
     }
+  }
+
+  private networkErrorToClientError(error: Error): Error {
+    this.logger.error('Network or server error', { error })
+
+    if (error.name === 'ServerError') {
+      const serverError = error as ServerError
+      if (serverError.statusCode === 401) {
+        return new NotAuthorizedError()
+      }
+    }
+
+    return new FatalError('')
   }
 }

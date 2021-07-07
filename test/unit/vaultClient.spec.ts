@@ -11,6 +11,18 @@ import { SudoUserClient } from '@sudoplatform/sudo-user'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
 import { NotSignedInError } from '@sudoplatform/sudo-common'
 
+if (typeof btoa === 'undefined') {
+  global.btoa = function (str) {
+    return Buffer.from(str).toString('base64')
+  }
+}
+
+if (typeof atob === 'undefined') {
+  global.atob = function (encoded) {
+    return Buffer.from(encoded, 'base64').toString('utf8')
+  }
+}
+
 describe('SudoSecureVaultClient', () => {
   const sudoUserClientMock: SudoUserClient = mock()
   const apiClientMock: ApiClient = mock()

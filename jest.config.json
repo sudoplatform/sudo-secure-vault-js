@@ -3,7 +3,7 @@
     {
       "displayName": "jsdom",
       "testEnvironment": "jsdom",
-      "testMatch": ["<rootDir>/test/unit/**/*.spec.ts"],
+      "testMatch": ["<rootDir>/test/unit/base64.spec.ts"],
       "testPathIgnorePatterns": ["/node_modules/", "/lib/"],
       "clearMocks": true,
       "collectCoverageFrom": ["src/**/*.ts", "!**/*.d.ts", "!node_modules/**"],
@@ -21,8 +21,8 @@
     {
       "displayName": "node",
       "testEnvironment": "node",
-      "testMatch": ["<rootDir>/test/integration/**/*.spec.ts"],
-      "testPathIgnorePatterns": ["/node_modules/", "/lib/"],
+      "testMatch": ["<rootDir>/test/**/*.spec.ts"],
+      "testPathIgnorePatterns": ["/node_modules/", "/lib/", "base64.spec.ts"],
       "clearMocks": true,
       "collectCoverageFrom": ["src/**/*.ts", "!**/*.d.ts", "!node_modules/**"],
       "coverageReporters": ["text", "json-summary"],
